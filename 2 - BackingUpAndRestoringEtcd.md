@@ -1,3 +1,5 @@
+![Backing up and restoring etcd](captures/backing_up_and_restoring_etcd.png)
+
 # Backup & Restore etcd
 
 > **Règle CKA** : etcd stocke tout l'état du cluster.  
