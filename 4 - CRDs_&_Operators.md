@@ -39,15 +39,15 @@ Exemples d'operators populaires :
  
 Rendez-vous sur [OperatorHub.io](https://operatorhub.io) et recherchez `argo cd`.
  
-![Résultat de recherche Argo CD sur OperatorHub](operatorhub-search-argocd.png)
+![Résultat de recherche Argo CD sur OperatorHub](captures/operatorhub-search-argocd.png)
  
 Cliquez sur le panel **Argo CD** pour accéder aux détails de l'operator.
  
-![Page de détail de l'Argo CD Operator](operatorhub-argocd-detail.png)
+![Page de détail de l'Argo CD Operator](captures/operatorhub-argocd-detail.png)
  
 La page décrit les CRDs fournies et le bouton **Install** affiche les instructions d'installation.
  
-![Instructions d'installation de l'Argo CD Operator](operatorhub-argocd-install.png)
+![Instructions d'installation de l'Argo CD Operator](captures/operatorhub-argocd-install.png)
  
 ### 3.2 Installer OLM (Operator Lifecycle Manager)
  
