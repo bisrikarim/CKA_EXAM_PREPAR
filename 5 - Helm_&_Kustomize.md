@@ -27,11 +27,11 @@ Deux outils open source répondent à ce besoin :
  
 Recherche sur [Artifact Hub](https://artifacthub.io) par mot-clé (ex: `jenkins`).
  
-![Résultats de recherche Jenkins sur Artifact Hub](artifacthub-search-jenkins.png)
+![Résultats de recherche Jenkins sur Artifact Hub](captures/artifacthub-search-jenkins.png)
  
 Cliquer sur un résultat affiche la description, le repository source et les valeurs configurables.
  
-![Page de détail du chart Jenkins sur Artifact Hub](artifacthub-jenkins-detail.png)
+![Page de détail du chart Jenkins sur Artifact Hub](captures/artifacthub-jenkins-detail.png)
  
 #### Étape 2 — Ajouter le repository
  
