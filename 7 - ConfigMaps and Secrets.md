@@ -9,7 +9,7 @@ Kubernetes propose deux primitives pour centraliser la configuration :
  
 Les deux sont **découplés du cycle de vie du Pod** — on peut modifier la config sans redéployer le Pod.
  
-![Schéma des deux modes de consommation ConfigMap et Secret depuis un Pod](captues/configmap-secret-consumption.png)
+![Schéma des deux modes de consommation ConfigMap et Secret depuis un Pod](captures/configmap-secret-consumption.png)
  
 > **Important** : Base64 est un **encodage**, pas un **chiffrement**. N'importe qui ayant accès au Secret peut décoder la valeur. Pour du vrai chiffrement en production : utiliser **Bitnami Sealed Secrets** ou un gestionnaire externe (HashiCorp Vault, AWS Secrets Manager).
  
