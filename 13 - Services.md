@@ -5,6 +5,8 @@
 > Le Service utilise **CoreDNS** pour être découvrable par hostname.  
 > Sélection des Pods : via **labels** (comme un Deployment).
 
+![Routage du trafic basé sur la sélection de labels](captures/Routage-du-trafic-basé-sur-la-sélection-de-labels.png)
+
 ---
 
 ## 1. Types de Services
@@ -17,6 +19,8 @@
 
 > ⚠️ Les types **s'héritent** : LoadBalancer ⊃ NodePort ⊃ ClusterIP.
 
+![Héritage entre les types de Services](captures/Heritage-entre-les-types-de-Services.png)
+
 ---
 
 ## 2. Port Mapping
@@ -24,6 +28,8 @@
 > `port` = port d'entrée du Service.  
 > `targetPort` = port du container dans le Pod (doit correspondre à `containerPort`).  
 > `nodePort` = port exposé sur le node (NodePort/LoadBalancer uniquement, range 30000-32767).
+
+![Port mapping](captures/Port-mapping.png)
 
 ---
 
@@ -72,6 +78,8 @@ spec:
 > Accessible **uniquement depuis l'intérieur du cluster**.  
 > IP interne fixe assignée automatiquement.
 
+![Accessibilité du Service ClusterIP](captures/Accessibilité-du-Service-ClusterIP.png)
+
 ```bash
 # Créer Pod + Service ClusterIP
 kubectl run echoserver --image=k8s.gcr.io/echoserver:1.10 --restart=Never \
@@ -113,6 +121,8 @@ spec:
 > Accessible depuis **l'extérieur du cluster** via `<NodeIP>:<nodePort>`.  
 > Port statique automatiquement assigné dans la range **30000-32767**.  
 > Hérite du comportement ClusterIP (accessible aussi depuis l'intérieur).
+
+![Accessibilité du Service NodePort](captures/Accessibilité-du-Service-NodePort.png)
 
 ```bash
 # Créer un Service NodePort
@@ -159,6 +169,8 @@ spec:
 > Distribue le trafic sur plusieurs nodes.  
 > Hérite de NodePort + ClusterIP.  
 > ⚠️ Pas disponible sur clusters on-premises sans solution tierce (ex: MetalLB).
+
+![Accessibilité du Service LoadBalancer](captures/Accessibilité-du-Service-LoadBalancer.png)
 
 ```bash
 # Créer un Service LoadBalancer
