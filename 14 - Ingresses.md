@@ -1,5 +1,3 @@
-# Ingresses
-
 > Un **Ingress** = point d'entrée unique pour le trafic HTTP(S) externe vers un ou plusieurs Services.  
 > Avantage vs LoadBalancer : **un seul load balancer** pour toute l'application → moins coûteux.  
 > Routing basé sur : **hostname** (optionnel) + **URL path** (obligatoire).  
@@ -256,14 +254,17 @@ kind: Ingress
 metadata:
   name: webapp-ingress
   namespace: webapp
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /    # ⚠️ obligatoire : réécrit /app et /api en / avant d'envoyer au Pod
+    nginx.ingress.kubernetes.io/use-regex: "true"    # active le support regex pour les paths
 spec:
-  ingressClassName: nginx                   # controller NGINX
+  ingressClassName: nginx                            # controller NGINX
   rules:
   - host: app.example.com
     http:
       paths:
       - path: /
-        pathType: Prefix                    # Prefix pour matcher / et /app
+        pathType: Prefix                             # Prefix pour matcher / et sous-paths
         backend:
           service:
             name: frontend-service
@@ -292,7 +293,7 @@ kubectl apply -f api-deployment.yaml
 kubectl apply -f services.yaml
 kubectl apply -f ingress.yaml
 
-# Vérifier l'Ingress
+# Vérifier l'Ingress (backends doivent avoir des IPs, pas d'erreurs)
 kubectl describe ingress webapp-ingress -n webapp
 
 # Récupérer l'IP et ajouter dans /etc/hosts
@@ -300,9 +301,10 @@ kubectl get ingress webapp-ingress -n webapp \
   -o jsonpath="{.status.loadBalancer.ingress[0]['ip']}"
 # → ajouter : <IP>   app.example.com dans /etc/hosts
 
-# Tester
-wget app.example.com/app --timeout=5 --tries=1
-wget app.example.com/api --timeout=5 --tries=1
+# Tester (les trois doivent retourner 200 OK)
+curl http://app.example.com/        # → 200 OK → nginx frontend
+curl http://app.example.com/app     # → 200 OK → nginx frontend
+curl http://app.example.com/api     # → 200 OK → apache api
 ```
 
 ---
@@ -402,6 +404,9 @@ kind: Ingress
 metadata:
   name: main-ingress
   namespace: production-apps
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /    # réécrit le path avant envoi au Pod
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: nginx
   rules:
@@ -427,6 +432,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/canary: "true"          # active le mode canary
     nginx.ingress.kubernetes.io/canary-weight: "20"     # 20% du trafic vers green
+    nginx.ingress.kubernetes.io/rewrite-target: /       # réécrit le path avant envoi au Pod
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: nginx
   rules:
@@ -449,6 +456,11 @@ kubectl apply -f services.yaml
 kubectl apply -f main-ingress.yaml
 kubectl apply -f canary-ingress.yaml
 
+# Vérifier les deux Ingress
+kubectl get ingress -n production-apps
+kubectl describe ingress main-ingress -n production-apps
+kubectl describe ingress canary-ingress -n production-apps
+
 # Récupérer l'IP du load balancer
 kubectl get ingress main-ingress -n production-apps \
   -o jsonpath="{.status.loadBalancer.ingress[0]['ip']}"
@@ -458,7 +470,7 @@ sudo vim /etc/hosts
 # → <IP>   app.production.com
 
 # Tester la distribution du trafic (lancer plusieurs fois)
-for i in $(seq 1 10); do wget -q -O- app.production.com | grep "Server"; done
+for i in $(seq 1 10); do curl -s http://app.production.com/ | grep -i "server\|version"; done
 # → ~80% réponses blue (v0.3), ~20% réponses green (v0.4)
 ```
 
@@ -488,6 +500,7 @@ for i in $(seq 1 10); do wget -q -O- app.production.com | grep "Server"; done
 | Backend Service inexistant | `describe ingress` → `error: endpoints not found` — créer le Service |
 | `Exact` avec trailing slash | Utiliser `Prefix` si les URLs peuvent avoir un `/` final |
 | Plusieurs IngressClass par défaut | Une seule doit avoir `is-default-class: "true"` |
+| Oublier `rewrite-target: /` | Le Pod reçoit `/app` ou `/api` → 404 car il ne sert que `/` — toujours ajouter l'annotation |
 | Oublier `ingressClassName` | Sans ça, dépend de la classe par défaut — peut être ambigu |
 | Backend = NodePort ou LoadBalancer | Non — le backend doit être un **ClusterIP** |
 | DNS non configuré | Ajouter manuellement dans `/etc/hosts` pour les tests locaux |
