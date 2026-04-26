@@ -749,7 +749,7 @@ spec:
           kubernetes.io/metadata.name: monitoring  # Depuis le namespace monitoring
     ports:
     - protocol: TCP
-      port: 8080
+      port: 80 # nginx:alpine écoute sur le port 80 uniquement — serait 8080 avec une vraie image d'application
 ```
 
 #### Étape 5 — Appliquer
