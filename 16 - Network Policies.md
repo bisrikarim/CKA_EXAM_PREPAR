@@ -848,7 +848,7 @@ spec:
           app: app-client
     ports:
     - protocol: TCP
-      port: 8080
+      port: 80
 ```
 
 **Fichier : `netpol-allow-client-egress.yaml`**
@@ -873,7 +873,7 @@ spec:
           app: app-server
     ports:
     - protocol: TCP
-      port: 8080
+      port: 80
   - ports:
     - protocol: UDP
       port: 53
