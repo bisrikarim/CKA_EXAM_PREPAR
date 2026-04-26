@@ -1,4 +1,4 @@
-## 1. Concepts Fondamentaux
+# 1. Concepts Fondamentaux
 
 ### Comportement par défaut de Kubernetes
 
@@ -244,9 +244,11 @@ spec:
 **Frontend → Backend → Database**
 
 ```
-[frontend] --port 80--> [backend] --port 6379--> [database]
+[frontend] --port 80--> [backend] --port 80--> [database]
     ✗ direct database access
 ```
+
+> ⚠️ **Note lab :** En production réelle, la DB écouterait sur le port 6379 (Redis). Dans ce lab, on utilise `nginx:alpine` qui écoute uniquement sur le **port 80**. Les policies sont adaptées en conséquence. Sur l'examen CKA, les images utilisées écouteront bien sur les bons ports.
 
 ### Policy 1 : Database — n'accepte que le backend
 
@@ -267,7 +269,7 @@ spec:
           tier: backend
     ports:
     - protocol: TCP
-      port: 6379
+      port: 80              # 80 car nginx:alpine — serait 6379 avec une vraie image Redis
 ```
 
 ### Policy 2 : Backend — accepte frontend, peut accéder à la DB
@@ -300,7 +302,7 @@ spec:
           tier: database
     ports:
     - protocol: TCP
-      port: 6379
+      port: 80              # 80 car nginx:alpine — serait 6379 avec une vraie image Redis
   - ports:                       # DNS toujours autorisé
     - protocol: UDP
       port: 53
@@ -552,7 +554,7 @@ spec:
           tier: backend
     ports:
     - protocol: TCP
-      port: 6379
+      port: 80              # 80 car nginx:alpine — serait 6379 avec une vraie image Redis
 ```
 
 **Fichier : `netpol-backend.yaml`**
@@ -585,7 +587,7 @@ spec:
           tier: database
     ports:
     - protocol: TCP
-      port: 6379
+      port: 80              # 80 car nginx:alpine — serait 6379 avec une vraie image Redis
   - ports:
     - protocol: UDP
       port: 53
@@ -614,8 +616,8 @@ kubectl exec frontend -n production -it -- wget --spider --timeout=1 <IP-backend
 kubectl exec frontend -n production -it -- wget --spider --timeout=1 <IP-database>
 # → download timed out
 
-# ✅ backend → database : doit passer
-kubectl exec backend -n production -it -- wget --spider --timeout=1 <IP-database>
+# ✅ backend → database : doit passer (port 80 car nginx:alpine)
+kubectl exec backend -n production -it -- wget --spider --timeout=1 <IP-database>:80
 # → remote file exists
 ```
 
